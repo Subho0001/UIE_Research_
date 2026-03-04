@@ -1,0 +1,25 @@
+#!/bin/bash
+#SBATCH --job-name=ft_head                              # Job name
+#SBATCH --output=ft.txt                      # Output file
+#SBATCH --ntasks=1                                # Run a single task
+#SBATCH --time=11:59:59                          # Time limit hh:mm:ss
+#SBATCH --mem=120G                                # Memory limit
+#SBATCH --partition=gpu-a100                      # Specify the gpu-h100 partition
+#SBATCH --gres=gpu:1                              # Request one GPU
+#SBATCH --nodelist=node1                   # Ensure it uses node2, where gpu-h100 is available
+
+module load anaconda/anaconda-23.7.4
+module load cuda/cuda-12.4
+
+
+# Activate the Conda environment
+source ~/.bashrc          # Ensure Conda is initialized
+conda activate mamba
+
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu124
+pip install --upgrade --force-reinstall "numpy<2"
+
+
+
+python3 train_teacher.py
+python3 train_kd.py
